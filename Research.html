@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research — Astrophel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080b0f;
+      --bg2: #0d1117;
+      --bg3: #111820;
+      --border: #1e2d3d;
+      --accent: #e63946;
+      --accent2: #00d4aa;
+      --text: #c9d1d9;
+      --text-dim: #58677a;
+      --text-bright: #f0f6fc;
+      --mono: 'Space Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--mono); overflow-x: hidden; }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none;
+      z-index: 9000;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8, 11, 15, 0.9);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-logo {
+      font-family: var(--sans);
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--text-bright);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-back {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-back:hover { color: var(--accent2); }
+
+    /* HERO */
+    .page-hero {
+      padding: 9rem 3rem 4rem;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.2;
+      mask-image: radial-gradient(ellipse at 80% 50%, black 20%, transparent 70%);
+    }
+
+    .hero-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hero-label::after { content: ''; display: block; height: 1px; width: 40px; background: var(--accent); }
+
+    h1 {
+      font-family: var(--sans);
+      font-weight: 800;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      color: var(--text-bright);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    h1 span { color: var(--accent); }
+
+    .hero-sub {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      max-width: 560px;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .stat { display: flex; flex-direction: column; gap: 0.2rem; }
+
+    .stat-num {
+      font-family: var(--sans);
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--text-bright);
+    }
+
+    .stat-num span { color: var(--accent); }
+    .stat-label { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* FILTER BAR */
+    .filter-bar {
+      padding: 1.5rem 3rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      background: var(--bg2);
+    }
+
+    .filter-btn {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--accent2);
+      color: var(--accent2);
+      background: rgba(0,212,170,0.05);
+    }
+
+    /* MAIN */
+    main { padding: 4rem 3rem; max-width: 1100px; }
+
+    /* FINDING CARD */
+    .finding {
+      border: 1px solid var(--border);
+      margin-bottom: 2rem;
+      background: var(--bg2);
+      transition: border-color 0.2s;
+    }
+
+    .finding:hover { border-color: #2e4460; }
+
+    .finding-header {
+      padding: 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .finding-meta { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .finding-id {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+    }
+
+    .finding-title {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text-bright);
+      line-height: 1.3;
+    }
+
+    .finding-protocol {
+      font-size: 0.72rem;
+      color: var(--accent2);
+      letter-spacing: 0.06em;
+    }
+
+    .badges { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: flex-start; }
+
+    .badge {
+      font-size: 0.62rem;
+      padding: 0.3rem 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .badge-high { background: rgba(230,57,70,0.1); border: 1px solid rgba(230,57,70,0.3); color: var(--accent); }
+    .badge-info { background: rgba(88,103,122,0.15); border: 1px solid var(--border); color: var(--text-dim); }
+    .badge-acknowledged { background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.25); color: var(--accent2); }
+    .badge-submitted { background: rgba(255,170,0,0.08); border: 1px solid rgba(255,170,0,0.25); color: #ffaa00; }
+    .badge-duplicate { background: rgba(130,80,255,0.1); border: 1px solid rgba(130,80,255,0.3); color: #a78bfa; }
+    .badge-platform { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+    .badge-fixed { background: rgba(0,212,170,0.12); border: 1px solid rgba(0,212,170,0.4); color: var(--accent2); font-weight: 700; }
+    .badge-validated { background: rgba(0,212,170,0.08); border: 1px solid rgba(0,212,170,0.25); color: var(--accent2); }
+
+    .finding-body { padding: 1.5rem 2rem; }
+
+    .finding-summary {
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      border-left: 2px solid var(--accent);
+      padding-left: 1rem;
+    }
+
+    .finding-section-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    pre {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 1.2rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text);
+      overflow-x: auto;
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .comment { color: #58677a; }
+    .keyword { color: var(--accent); }
+    .string { color: var(--accent2); }
+    .highlight-line { background: rgba(230,57,70,0.08); display: block; margin: 0 -1.2rem; padding: 0 1.2rem; }
+    .ok-line { background: rgba(0,212,170,0.05); display: block; margin: 0 -1.2rem; padding: 0 1.2rem; }
+
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .impact-box {
+      background: var(--bg);
+      padding: 1rem 1.2rem;
+    }
+
+    .impact-icon { font-size: 1rem; margin-bottom: 0.4rem; }
+    .impact-title { font-size: 0.72rem; color: var(--text-bright); margin-bottom: 0.3rem; font-weight: 700; }
+    .impact-desc { font-size: 0.68rem; color: var(--text-dim); line-height: 1.5; }
+
+    .fix-block {
+      background: rgba(0,212,170,0.03);
+      border: 1px solid rgba(0,212,170,0.15);
+      padding: 1rem 1.2rem;
+      font-size: 0.75rem;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .fix-block code { color: var(--accent2); font-family: var(--mono); }
+
+    .acknowledged-block {
+      margin-top: 1.5rem;
+      padding: 1rem 1.2rem;
+      background: rgba(0,212,170,0.04);
+      border: 1px solid rgba(0,212,170,0.15);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    .acknowledged-block strong { color: var(--accent2); }
+
+    .finding-footer {
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    /* DISCLAIMER */
+    .disclaimer {
+      margin: 0 0 3rem;
+      padding: 1rem 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .disclaimer span { color: var(--accent); font-size: 1rem; }
+
+    /* MOBILE */
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.5rem; }
+      .page-hero, main, .filter-bar { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .finding-header { flex-direction: column; }
+      .stats-row { gap: 1.5rem; }
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      margin-top: 4rem;
+    }
+
+    footer a { color: var(--accent2); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Astro<span>phel</span></a>
+  <a href="index.html" class="nav-back">← Back to home</a>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="hero-label">Security Research</div>
+  <h1>The <span>Findings.</span></h1>
+  <p class="hero-sub">
+    A documented record of every vulnerability I've investigated — acknowledged, submitted, and in review. Every finding backed by a deterministic proof of concept.
+  </p>
+  <div class="stats-row">
+    <div class="stat">
+      <span class="stat-num">4</span>
+      <span class="stat-label">Total Findings</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">3</span>
+      <span class="stat-label">High Severity</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">1</span>
+      <span class="stat-label">Acknowledged</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">2</span>
+      <span class="stat-label">Protocols Audited</span>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER -->
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filter('all', this)">All</button>
+  <button class="filter-btn" onclick="filter('high', this)">High Severity</button>
+  <button class="filter-btn" onclick="filter('info', this)">Informational</button>
+  <button class="filter-btn" onclick="filter('c4', this)">Code4rena</button>
+  <button class="filter-btn" onclick="filter('cantina', this)">Cantina</button>
+  <button class="filter-btn" onclick="filter('validated', this)">✓ Validated</button>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <div class="disclaimer">
+    <span>⚠</span>
+    <div>All findings below are either acknowledged by the protocol team or currently under judge review. Findings marked <strong>Submitted</strong> are awaiting final validation. No unvalidated claims are made.</div>
+  </div>
+
+  <!-- FINDING 1: Jupiter H-03 -->
+  <div class="finding" data-tags="high c4">
+    <div class="finding-header">
+      <div class="finding-meta">
+        <span class="finding-id">// JUP-H-03 · Jupiter Lend · Code4rena 2026-02</span>
+        <span class="finding-title">Absorption Inflation — Fund Drainage via rebalance()</span>
+        <span class="finding-protocol">programs/vaults/src/module/user.rs · Rust / Anchor / Solana</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-high">High / Critical</span>
+        <span class="badge badge-submitted">Submitted</span>
+        <span class="badge badge-platform">Code4rena</span>
+      </div>
+    </div>
+    <div class="finding-body">
+      <p class="finding-summary">
+        When a branch is absorbed into the vault, <code>total_borrow</code> in <code>VaultState</code> is never decremented. The absorbed debt silently disappears from tick/branch accounting, creating phantom debt that <code>rebalance()</code> treats as real profit and drains from the Liquidity Layer. Unlike <code>liquidate()</code> which correctly calls <code>reduce_total_borrow()</code>, <code>absorb()</code> never does — a single missing line that enables continuous fund extraction.
+      </p>
+
+      <div class="finding-section-label">// Root Cause</div>
+      <pre><code><span class="comment">; user.rs — absorb() — L1112-1115</span>
+vault_state.add_absorbed_col_amount(col_absorbed)?;    <span class="ok-line">// tracked ✓</span>
+vault_state.add_absorbed_debt_amount(debt_absorbed)?;  <span class="ok-line">// tracked ✓</span>
+<span class="highlight-line">// vault_state.reduce_total_borrow(debt_absorbed)      // MISSING ✗</span>
+Ok((col_absorbed.cast()?, debt_absorbed.cast()?))
+
+<span class="comment">; liquidate() does it correctly:</span>
+vault_state.reduce_total_supply(current_data.total_col_liq)?;
+<span class="ok-line">vault_state.reduce_total_borrow(current_data.total_debt_liq)?; // done here ✓</span>
+<span class="highlight-line">// absorb() never calls this                                    // BUG ✗</span></code></pre>
+
+      <div class="finding-section-label">// Impact</div>
+      <div class="impact-grid">
+        <div class="impact-box">
+          <div class="impact-icon">💸</div>
+          <div class="impact-title">Active Fund Drainage</div>
+          <div class="impact-desc">rebalance() reads inflated total_borrow and drains the delta from the Liquidity Layer to the rebalancer address as "profit".</div>
+        </div>
+        <div class="impact-box">
+          <div class="impact-icon">📈</div>
+          <div class="impact-title">Compounds Forever</div>
+          <div class="impact-desc">Every absorption event inflates total_borrow permanently. Absorption is a core protocol feature — not an edge case.</div>
+        </div>
+        <div class="impact-box">
+          <div class="impact-icon">🏦</div>
+          <div class="impact-title">Lender Deposits at Risk</div>
+          <div class="impact-desc">Real user deposits in the Liquidity Layer are the source of the phantom drain. Full insolvency is the end state.</div>
+        </div>
+      </div>
+
+      <div class="finding-section-label">// Proof of Concept</div>
+      <pre><code><span class="comment">// cargo test --test absorption_inflation_poc -p library -- --nocapture</span>
+
+=== BUG: Absorption Inflation ===
+total_borrow (should be 7_000_000): <span class="keyword">8000000</span>
+absorbed_debt_amount:               <span class="accent2">1000000</span>
+
+IMPACT: rebalance() borrows 1000000 ghost delta from Liquidity Layer
+test test_absorption_inflation_drain ... <span class="string">ok</span>
+test result: <span class="string">ok. 1 passed; 0 failed</span></code></pre>
+
+      <div class="finding-section-label">// Fix</div>
+      <div class="fix-block">
+        Add one line to <code>absorb()</code> after line 1113:<br><br>
+        &nbsp;&nbsp;vault_state.add_absorbed_debt_amount(debt_absorbed)?;<br>
+        <code style="color:var(--accent2)">+ vault_state.reduce_total_borrow(debt_absorbed)?;</code>
+      </div>
+    </div>
+    <div class="finding-footer">
+      <span>Submitted March 2026</span>
+      <span>Awaiting judge validation</span>
+    </div>
+  </div>
+
+  <!-- FINDING 2: Jupiter H-02 -->
+  <div class="finding" data-tags="high c4">
+    <div class="finding-header">
+      <div class="finding-meta">
+        <span class="finding-id">// JUP-H-02 · Jupiter Lend · Code4rena 2026-02</span>
+        <span class="finding-title">Net/Raw Debt Mismatch — Liquidation DoS via Underflow</span>
+        <span class="finding-protocol">programs/vaults/src/module/user.rs · Rust / Anchor / Solana</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-high">High</span>
+        <span class="badge badge-submitted">Submitted</span>
+        <span class="badge badge-platform">Code4rena</span>
+      </div>
+    </div>
+    <div class="finding-body">
+      <p class="finding-summary">
+        <code>VaultState.total_borrow</code> tracks net debt — raw debt minus tick-rounding dust. During liquidation, <code>reduce_total_borrow()</code> is called with the raw debt amount. This causes a subtraction underflow in <code>safe_sub()</code>, reverting the transaction and permanently blocking all future liquidations for that vault. Since dust is inherent to tick-math, this affects every single borrow in the protocol.
+      </p>
+
+      <div class="finding-section-label">// The Math</div>
+      <pre><code>total_borrow  = raw_debt - dust  =>  <span class="keyword">666,667</span>   <span class="comment">// NET — what VaultState stores</span>
+total_debt_liq = raw_debt        =>  <span class="keyword">1,000,000</span>  <span class="comment">// RAW — what liquidate() passes</span>
+
+<span class="highlight-line">safe_sub(666_667, 1_000_000) => UNDERFLOW => REVERT  // ✗</span></code></pre>
+
+      <div class="finding-section-label">// Proof of Concept</div>
+      <pre><code><span class="comment">// cargo test --test net_raw_mismatch_poc -p library -- --nocapture</span>
+
+total_borrow (NET): <span class="keyword">666667</span>
+subtract amount (RAW): <span class="keyword">1000000</span>
+Result: <span class="keyword">None</span>  <span class="comment">// underflow confirmed</span>
+
+IMPACT: All liquidations halt permanently. Bad debt accumulates.
+test test_liquidation_underflow_revert ... <span class="string">ok. 1 passed; 0 failed</span></code></pre>
+
+      <div class="finding-section-label">// Fix</div>
+      <div class="fix-block">
+        Subtract only the net portion, or unify accounting basis:<br><br>
+        <code style="color:var(--accent)">- vault_state.reduce_total_borrow(current_data.total_debt_liq)?;</code><br>
+        <code style="color:var(--accent2)">+ vault_state.reduce_total_borrow(current_data.total_debt_liq.safe_sub(dust)?)?;</code>
+      </div>
+    </div>
+    <div class="finding-footer">
+      <span>Submitted March 2026</span>
+      <span>Awaiting judge validation</span>
+    </div>
+  </div>
+
+  <!-- FINDING 3: Jupiter H-01 -->
+  <div class="finding" data-tags="high c4">
+    <div class="finding-header">
+      <div class="finding-meta">
+        <span class="finding-id">// JUP-H-01 · Jupiter Lend · Code4rena 2026-02</span>
+        <span class="finding-title">Solvency Limbo — Unliquidatable Positions via Penalty Math</span>
+        <span class="finding-protocol">programs/vaults/src/state/structs.rs · Rust / Anchor / Solana</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-high">High</span>
+        <span class="badge badge-submitted">Submitted</span>
+        <span class="badge badge-platform">Code4rena</span>
+      </div>
+    </div>
+    <div class="finding-body">
+      <p class="finding-summary">
+        The formula inside <code>get_debt_liquidated()</code> computes a denominator as <code>1 - (col_per_debt × ratio)</code>. When a position is underwater and the liquidation penalty is large enough that this product exceeds 1.0, the <code>safe_sub()</code> call rev
