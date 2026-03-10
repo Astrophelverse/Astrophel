@@ -18,7 +18,6 @@
 ```rust
 struct Astrophel {
     alias:         "Limbowalker",          // web3 identity
-    location:      "West Africa",
     role:          "Security Researcher + Protocol Builder",
     building:      "Alcor Protocol",       // decentralized voice data marketplace
     hunting:       ["Code4rena", "Cantina", "Immunefi"],
